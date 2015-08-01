@@ -45,6 +45,7 @@ global_settings.SECRET_KEY = 'NotASecret'
 os.environ['DJANGO_SETTINGS_MODULE'] = 'django_settings'
 sys.modules['django_settings'] = django_settings = imp.new_module('django_settings')
 django_settings.SECRET_KEY = 'xyzzy'
+from django.db import models
 
 from oauth2client.django_orm import CredentialsField
 from oauth2client.django_orm import FlowField
@@ -67,6 +68,9 @@ class TestCredentialsField(unittest.TestCase):
                                               connection=None)
     self.assertEqual(prep_value, self.pickle)
 
+  def test_field_metaclass(self):
+    self.assertTrue(isinstance(self.field.__class__, models.SubfieldBase))
+
 
 class TestFlowField(unittest.TestCase):
   def setUp(self):
@@ -83,6 +87,9 @@ class TestFlowField(unittest.TestCase):
   def test_field_pickled(self):
     prep_value = self.field.get_db_prep_value(self.flow, connection=None)
     self.assertEqual(prep_value, self.pickle)
+
+  def test_field_metaclass(self):
+    self.assertTrue(isinstance(self.field.__class__, models.SubfieldBase))
 
 
 if __name__ == '__main__':
